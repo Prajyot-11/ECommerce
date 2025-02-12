@@ -5,9 +5,9 @@ const connectDatabase = () => {
     .then((data) => {
         console.log(`Connection is successful with ${data.connection.host}`);
     })
-    .catch((err) => {
-        console.error("Database connection failed:", err);
-    });
+    // .catch((err) => {
+    //     console.error("Database connection failed:", err);
+    // });
 }
 
 module.exports = connectDatabase;
