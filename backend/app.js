@@ -8,9 +8,11 @@ app.use(express.json()); // Corrected line
 
 // Route Import
 const product = require("./routes/productRoute");
+const user = require("./routes/userRoute");
 
 // Define your routes
 app.use("/api/v1", product);
+app.use("/api/v1", user);
 
 //Middleware for error
 app.use(errorMiddleware); 
