@@ -112,6 +112,5 @@ exports.getProductDetails = catchAsyncError(async(req,res,next) =>{
     return res.status(201).json({
         success:true,
         product,
-        productCount,
     })
 });
