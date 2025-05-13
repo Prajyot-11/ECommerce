@@ -2,6 +2,7 @@ const Product = require("../models/productModel");
 const ErrorHander = require("../utils/errorHandler");
 const catchAsyncError = require("../middleware/catchAsyncError");
 const ApiFeatures = require("../utils/apifeatures");
+const { findByIdAndUpdate } = require("../models/userModel");
 
 // Create Product  ---> ADMIN
 // Not applied catchAsyncError
@@ -155,4 +156,60 @@ exports.createProductReview = catchAsyncError(async(req, res, next) => {
       res.status(200).json({
           success: true,
       })
+});
+
+// Get all reviews of product
+exports.getAllProductsReviews = catchAsyncError(async(req,res,next) => {
+
+    let product = await Product.findById(req.query.id);
+    
+    if(!product){
+        return next(new ErrorHander("Product Not Found in getAllProductsReviews", 404));
+    }
+
+    return res.status(201).json({
+        success:true,
+        reviews: product.reviews,
+    });
+});
+
+// Delete Review
+exports.deleteReview = catchAsyncError(async(req,res,next) => {
+
+    let product = await Product.findById(req.query.productId);
+    
+    if(!product){
+        return next(new ErrorHander("Product Not Found in deleteReview", 404));
+    }
+
+    const reviews = product.reviews.filter(
+        (rev) => rev._id.toString() !== req.query.id.toString()
+      );
+      
+    
+    let sumOfRatings = 0;
+    
+    reviews.forEach(rev => {
+      sumOfRatings += rev.rating;
+    })
+
+    const ratings = sumOfRatings / product.reviews.length;
+
+    const noOfReviews = reviews.length;
+
+    await Product.findByIdAndUpdate(req.query.productId, {
+        reviews,
+        ratings,
+        noOfReviews
+    },
+    {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false
+    })
+
+    return res.status(201).json({
+        success:true,
+        reviews: product.reviews,
+    });
 });
